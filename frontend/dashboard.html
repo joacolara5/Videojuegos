@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GameDash | Panel</title>
+    <!-- Fuentes y estilos -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Roboto:wght@300;400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #4CAF50;
+            --primary-dark: #2E7D32;
+            --neon: #0af;
+            --dark-bg: #0f1219;
+            --card-bg: rgba(20, 25, 35, 0.8);
+        }
+        .hidden {
+            display: none;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: linear-gradient(rgba(15, 20, 30, 0.95), rgba(10, 15, 25, 0.98));
+            font-family: 'Roboto', sans-serif;
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }   
+
+        .dashboard {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(76, 175, 80, 0.3);
+        }
+
+        .header h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.8rem;
+            letter-spacing: 1px;
+            text-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
+        }
+
+        .logout-btn {
+            background: rgba(220, 53, 69, 0.2);
+            color: #dc3545;
+            border: 1px solid #dc3545;
+            padding: 8px 15px;
+            border-radius: 5px;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: rgba(220, 53, 69, 0.4);
+            transform: translateY(-2px);
+        }
+
+        /* Botones principales */
+        .acciones {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Orbitron', sans-serif;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn i {
+            font-size: 1rem;
+        }
+
+        .primario {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+        }
+
+        .primario:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+        }
+
+        .secundario {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--primary);
+            border: 1px solid rgba(76, 175, 80, 0.3);
+        }
+
+        .secundario:hover {
+            background: rgba(76, 175, 80, 0.1);
+            border-color: var(--primary);
+        }
+
+        /* Formulario */
+        .formulario {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s;
+        }
+
+        .formulario.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .form-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 25px;
+            width: 90%;
+            max-width: 600px;
+            border: 1px solid rgba(76, 175, 80, 0.2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+
+        .form-card h3 {
+            font-family: 'Orbitron', sans-serif;
+            margin-bottom: 20px;
+            color: var(--primary);
+            text-align: center;
+        }
+
+        #form-videojuego {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        #form-videojuego input,
+        #form-videojuego select {
+            width: 100%;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            color: rgb(51, 226, 57);
+        }
+
+        #form-videojuego input:focus,
+        #form-videojuego select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 10px rgba(76, 175, 80, 0.3);
+        }
+
+        .form-buttons {
+            grid-column: span 2;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .form-buttons button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .form-buttons button[type="submit"] {
+            background: var(--primary);
+            color: white;
+        }
+
+        .form-buttons button[type="button"] {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        /* Filtros */
+        #filtros {
+            background: var(--card-bg);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+            border: 1px solid rgba(76, 175, 80, 0.1);
+        }
+
+        #filtros label {
+            color: var(--primary);
+            font-weight: 500;
+        }
+
+        #filtros select,
+        #filtros input {
+            padding: 8px 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            color: rgb(76, 206, 89);
+            min-width: 150px;
+        }
+
+        /* Tabla */
+        #contenedor-tabla {
+            background: var(--card-bg);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(76, 175, 80, 0.1);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        th {
+            background: rgba(76, 175, 80, 0.1);
+            color: var(--primary);
+            font-family: 'Orbitron', sans-serif;
+            letter-spacing: 1px;
+        }
+
+        tr:hover {
+            background: rgba(76, 175, 80, 0.05);
+        }
+
+        .acciones-td {
+            display: flex;
+            gap: 10px;
+        }
+
+        .accion-btn {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .editar-btn {
+            background: rgba(13, 110, 253, 0.2);
+            color: #0d6efd;
+            border: 1px solid #0d6efd;
+        }
+
+        .editar-btn:hover {
+            background: rgba(13, 110, 253, 0.3);
+        }
+
+        .eliminar-btn {
+            background: rgba(220, 53, 69, 0.2);
+            color: #dc3545;
+            border: 1px solid #dc3545;
+        }
+
+        .eliminar-btn:hover {
+            background: rgba(220, 53, 69, 0.3);
+        }
+
+        /* Gráficos */
+            /* Gráficos */
+    #contenedor-graficos {
+        background: rgba(10, 10, 20, 0.9); /* Fondo oscuro para resaltar los neones */
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 30px;
+        border: 1px solid rgba(76, 175, 80, 0.3);
+        box-shadow: 0 0 15px rgba(76, 175, 80, 0.5), 
+                    0 5px 15px rgba(0, 0, 0, 0.5);
+    }
+
+    #contenedor-graficos h2 {
+        font-family: 'Orbitron', sans-serif;
+        color: #00ff9d; /* Verde neón */
+        margin: 20px 0 15px;
+        font-size: 1.2rem;
+        text-shadow: 0 0 5px #00ff9d, 
+                    0 0 10px #00ff9d;
+    }
+
+    .chart-container {
+        margin-bottom: 30px;
+        position: relative;
+        height: 300px;
+        width: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        border-radius: 5px;
+        box-shadow: inset 0 0 10px rgba(0, 255, 157, 0.3);
+    }
+
+    /* Paleta de colores neón para gráficos */
+    .neon-palette {
+        --neon-green: #00ff9d;
+        --neon-pink: #ff00aa;
+        --neon-blue: #00e1ff;
+        --neon-purple: #cc00ff;
+        --neon-yellow: #fff700;
+    }
+
+    /* Efectos especiales */
+    .neon-text {
+        text-shadow: 0 0 5px var(--primary), 
+                    0 0 10px var(--primary);
+    }
+
+    .neon-border {
+        border: 1px solid rgba(0, 255, 157, 0.5);
+        box-shadow: 0 0 10px rgba(0, 255, 157, 0.5);
+    }
+
+    .hidden {
+        display: none;
+    }
+
+    /* Estilos específicos para el gráfico de barras */
+    .bar-chart-neon {
+        background-color: rgba(0, 5, 15, 0.8);
+    }
+
+    .bar-chart-neon .chartjs-grid line {
+        stroke: rgba(0, 255, 157, 0.2);
+    }
+
+    .bar-chart-neon .chartjs-axis text {
+        fill: #00ff9d !important;
+        font-family: 'Orbitron', sans-serif;
+    }
+
+    .bar-chart-neon .chartjs-tooltip {
+        background: rgba(0, 10, 20, 0.9) !important;
+        border: 1px solid #00ff9d !important;
+        color: #00ff9d !important;
+        font-family: 'Roboto', sans-serif;
+    }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            #form-videojuego {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-buttons {
+                grid-column: span 1;
+            }
+            
+            #filtros {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .acciones {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="dashboard">
+        <header class="header">
+            <h1><span class="neon-text">GameDash</span> | Bienvenido, {{ username }}</h1>
+            <a href="/logout" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Cerrar sesión</a>
+        </header>
+
+        <div class="acciones">
+            <button onclick="mostrarFormulario()" class="btn primario">
+                <i class="fas fa-plus"></i> Agregar Videojuego
+            </button>
+            <button onclick="toggleTabla()" class="btn secundario" id="btn-tabla">
+                <i class="fas fa-table"></i> Mostrar Datos
+            </button>
+            <button id="toggle-graficos" class="btn secundario" onclick="toggleGraficos()">
+                <i class="fas fa-chart-bar"></i> Mostrar Gráficos
+        </button>
+
+        </div>
+
+        <!-- Formulario flotante -->
+        <div id="formulario" class="formulario">
+            <div class="form-card">
+                <h3 id="form-titulo"><i class="fas fa-gamepad"></i> Nuevo Videojuego</h3>
+                <form id="form-videojuego">
+                    <input type="hidden" id="id">
+                    
+                    <div>
+                        <label for="name">Nombre</label>
+                        <input type="text" id="name" placeholder="Ej: The Legend of Zelda" required>
+                    </div>
+                    
+                    <div>
+                        <label for="platform">Plataforma</label>
+                        <select id="platform" required>
+                            <option value="">Seleccione...</option>
+                            <!-- Opciones se llenarán dinámicamente -->
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label for="year">Año</label>
+                        <input type="number" id="year" placeholder="Ej: 2020" min="1950" max="2050">
+                    </div>
+                    
+                    <div>
+                        <label for="genre">Género</label>
+                        <select id="genre">
+                            <option value="">Seleccione...</option>
+                            <!-- Opciones se llenarán dinámicamente -->
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label for="publisher">Editor</label>
+                        <select id="publisher">
+                            <option value="">Seleccione...</option>
+                            <!-- Opciones se llenarán dinámicamente -->
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label for="global_sales">Ventas Globales (millones)</label>
+                        <input type="number" step="0.01" id="global_sales" placeholder="Ej: 5.2">
+                    </div>
+                    
+                    <div class="form-buttons">
+                        <button type="submit"><i class="fas fa-save"></i> Guardar</button>
+                        <button type="button" onclick="ocultarFormulario()"><i class="fas fa-times"></i> Cancelar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Filtros -->
+        <div id="filtros">
+            <div>
+                <label for="filtro-platform">Plataforma:</label>
+                <select id="filtro-platform">
+                    <option value="">Todas</option>
+                </select>
+            </div>
+            
+            <div>
+                <label for="filtro-genre">Género:</label>
+                <select id="filtro-genre">
+                    <option value="">Todos</option>
+                </select>
+            </div>
+            
+            <div>
+                <label for="filtro-year">Año (>=):</label>
+                <input type="number" id="filtro-year" min="1950" max="2050" placeholder="Desde año">
+            </div>
+            
+            <button id="reset-filtros" class="btn secundario" style="margin-left: auto;">
+                <i class="fas fa-sync-alt"></i> Reiniciar
+            </button>
+        </div>
+
+        <!-- Tabla de datos -->
+        <div id="contenedor-tabla" class = "hidden">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Plataforma</th>
+                        <th>Año</th>
+                        <th>Género</th>
+                        <th>Ventas Globales</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="tabla-juegos">
+                    <!-- Datos se cargarán dinámicamente -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Gráficos -->
+        <div id="contenedor-graficos" class = "hidden">
+            <h2><i class="fas fa-globe-americas"></i> Ventas por Región</h2>
+            <div class="chart-container">
+                <canvas id="grafico-ventas-region"></canvas>
+            </div>
+            
+            <h2><i class="fas fa-trophy"></i> Top 5 Juegos</h2>
+            <div class="chart-container">
+                <canvas id="grafico-top-juegos"></canvas>
+            </div>
+            
+            <h2><i class="fas fa-chess"></i> Juegos por Género</h2>
+            <div class="chart-container">
+                <canvas id="grafico-juegos-genero"></canvas>
+            </div>
+            
+            <h2><i class="fas fa-gamepad"></i> Ventas por Plataforma</h2>
+            <div class="chart-container">
+                <canvas id="grafico-ventas-plataforma"></canvas>
+            </div>
+        </div>
+    </div>
+    <div id="loading-overlay" style="display:none; position: fixed; top:0; left:0; right:0; bottom:0; background: rgba(0,0,0,0.6); z-index: 9999; display: flex; justify-content: center; align-items: center;">
+        <div class="spinner"></div>
+    </div>
+    <!-- Toast Notification -->
+    <div id="toast" class="toast-hidden"></div>
+
+    <script src="/static/main.js"></script>
+    <script>
+        // Funciones básicas para demostración - implementación completa en main.js
+        function mostrarFormulario() {
+            document.getElementById('formulario').classList.add('active');
+        }
+        
+        function ocultarFormulario() {
+            document.getElementById('formulario').classList.remove('active');
+        }
+        
+        function toggleTabla() {
+            const contenedor = document.getElementById('contenedor-tabla');
+            const btn = document.getElementById('btn-tabla');
+            
+            if (contenedor.classList.contains('hidden')) {
+                contenedor.classList.remove('hidden');
+                btn.innerHTML = '<i class="fas fa-eye-slash"></i> Ocultar Datos';
+            } else {
+                contenedor.classList.add('hidden');
+                btn.innerHTML = '<i class="fas fa-table"></i> Mostrar Datos';
+            }
+        }
+        
+        document.getElementById('toggle-graficos').addEventListener('click', function() {
+            const contenedor = document.getElementById('contenedor-graficos');
+            const btn = this;
+            
+            if (contenedor.classList.contains('hidden')) {
+                contenedor.classList.remove('hidden');
+                btn.innerHTML = '<i class="fas fa-chart-bar"></i> Ocultar Gráficos';
+                // Aquí se inicializarían los gráficos
+            } else {
+                contenedor.classList.add('hidden');
+                btn.innerHTML = '<i class="fas fa-chart-bar"></i> Mostrar Gráficos';
+            }
+        });
+    </script>
+</body>
+</html>

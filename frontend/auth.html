@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GameHub - Acceso</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Roboto:wght@300;400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #4CAF50;
+      --primary-dark: #2E7D32;
+      --neon: #0af;
+    }
+    
+    * {
+      box-sizing: border-box;
+    }
+    
+    body {
+      background: linear-gradient(rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.9)), 
+                  url("{{ url_for('static', filename='images/gaming-bg.jpg') }}") no-repeat center center fixed;
+      background-size: cover;
+      font-family: 'Roboto', sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      color: #fff;
+      overflow: hidden;
+    }
+    
+    /* Efecto de partículas (opcional) */
+    body::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+      pointer-events: none;
+    }
+    
+    .container {
+      background: rgba(15, 20, 25, 0.8);
+      padding: 2.5rem;
+      border-radius: 12px;
+      width: 380px;
+      box-shadow: 0 8px 32px rgba(0, 255, 150, 0.1);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(76, 175, 80, 0.2);
+      z-index: 10;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .container::before {
+      content: '';
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+      background: linear-gradient(45deg, var(--primary), var(--neon), var(--primary));
+      z-index: -1;
+      border-radius: 14px;
+      opacity: 0.3;
+    }
+    
+    h2 {
+      font-family: 'Orbitron', sans-serif;
+      text-align: center;
+      color: var(--primary);
+      margin-bottom: 1.8rem;
+      font-size: 1.8rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      text-shadow: 0 0 8px rgba(76, 175, 80, 0.6);
+    }
+    
+    input {
+      width: 100%;
+      padding: 12px 15px;
+      margin: 10px 0;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      color: #fff;
+      font-size: 0.95rem;
+      transition: all 0.3s;
+    }
+    
+    input::placeholder {
+      color: rgba(255, 255, 255, 0.5);
+    }
+    
+    input:focus {
+      outline: none;
+      border-color: var(--primary);
+      background: rgba(76, 175, 80, 0.1);
+      box-shadow: 0 0 12px rgba(76, 175, 80, 0.3);
+    }
+    
+    button {
+      width: 100%;
+      padding: 14px;
+      margin: 15px 0 5px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-family: 'Orbitron', sans-serif;
+    }
+    
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(76, 175, 80, 0.4);
+    }
+    
+    .toggle {
+      text-align: center;
+      margin-top: 20px;
+      color: rgba(255, 255, 255, 0.7);
+      cursor: pointer;
+      transition: all 0.3s;
+      font-size: 0.9rem;
+    }
+    
+    .toggle:hover {
+      color: var(--primary);
+      text-shadow: 0 0 8px rgba(76, 175, 80, 0.4);
+    }
+    
+    .flash {
+      padding: 12px;
+      margin-bottom: 20px;
+      border-radius: 6px;
+      text-align: center;
+      font-size: 0.9rem;
+    }
+    
+    .flash.success {
+      background: rgba(40, 167, 69, 0.2);
+      border: 1px solid rgba(40, 167, 69, 0.3);
+      color: #28a745;
+    }
+    
+    .flash.danger {
+      background: rgba(220, 53, 69, 0.2);
+      border: 1px solid rgba(220, 53, 69, 0.3);
+      color: #dc3545;
+    }
+    
+    /* Efecto de luces (opcional) */
+    .light {
+      position: absolute;
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      filter: blur(60px);
+      opacity: 0.3;
+      z-index: 0;
+    }
+    
+    .light-1 {
+      background: var(--primary);
+      top: -50px;
+      right: -50px;
+    }
+    
+    .light-2 {
+      background: var(--neon);
+      bottom: -30px;
+      left: -30px;
+    }
+  </style>
+</head>
+<body>
+  <div class="light light-1"></div>
+  <div class="light light-2"></div>
+  
+  <div class="container">
+    <h2 id="form-title">Iniciar Sesión</h2>
+    
+    <!-- Mensajes Flash -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="flash {{ category }}">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <form method="POST" action="{{ url_for('auth') }}">
+      <input type="hidden" name="action" id="action" value="login">
+      <input type="text" name="username" placeholder="Usuario" required>
+      <input type="password" name="password" placeholder="Contraseña" required>
+      <button type="submit" id="submit-btn">Entrar</button>
+    </form>
+    <div class="toggle" id="toggle-link">¿No tienes cuenta? <span style="color: var(--primary);">Regístrate</span></div>
+  </div>
+
+  <script>
+    const toggle = document.getElementById('toggle-link');
+    const title = document.getElementById('form-title');
+    const action = document.getElementById('action');
+    const btn = document.getElementById('submit-btn');
+
+    toggle.addEventListener('click', () => {
+      if (action.value === 'login') {
+        action.value = 'register';
+        title.textContent = 'Registrarse';
+        btn.textContent = 'Crear Cuenta';
+        toggle.innerHTML = '¿Ya tienes cuenta? <span style="color: var(--primary);">Inicia sesión</span>';
+      } else {
+        action.value = 'login';
+        title.textContent = 'Iniciar Sesión';
+        btn.textContent = 'Entrar';
+        toggle.innerHTML = '¿No tienes cuenta? <span style="color: var(--primary);">Regístrate</span>';
+      }
+    });
+  </script>
+</body>
+</html>
